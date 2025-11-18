@@ -4,10 +4,10 @@
   <div>
     <h1 class="text-5xl font-bold tracking-tight">Swap modules, study happier</h1>
     <p class="mt-4 text-gray-700">Find peers who want the modules you have, and want your modules in return. Built for UK universities and compliant with department rules.</p>
-    <div class="mt-6 flex gap-3">
-      <a href="/auth/login" class="px-5 py-3 bg-blue-600 text-white rounded">Get started</a>
-      <a href="/swaps" class="px-5 py-3 border rounded">Browse swaps</a>
-    </div>
+    <form method="get" action="/swaps" class="mt-6 flex gap-2">
+      <input name="q" class="flex-1 border rounded px-3 py-2" placeholder="Search modules (e.g. BCU-CS-001, Psychology, Law)" />
+      <button class="px-5 py-3 bg-gray-900 text-white rounded">Search</button>
+    </form>
     <div class="mt-6 flex items-center gap-4">
       <div class="bg-white rounded border px-4 py-2">
         <div class="text-xs uppercase text-gray-500">Users</div>
@@ -22,22 +22,13 @@
         <div class="text-2xl font-semibold">1</div>
       </div>
     </div>
+    <div class="mt-6 flex gap-3">
+      <a href="/auth/login" class="px-5 py-3 bg-blue-600 text-white rounded">Get started</a>
+      <a href="/swaps" class="px-5 py-3 border rounded">Browse swaps</a>
+    </div>
   </div>
-  <div class="bg-white p-6 rounded border">
-    <div class="flex items-center gap-4">
-      <div class="text-3xl">🎓</div>
-      <div>
-        <div class="text-2xl font-semibold">UK-focused</div>
-        <div class="text-gray-600">Works with university emails only (.ac.uk)</div>
-      </div>
-    </div>
-    <div class="mt-6">
-      <ul class="space-y-2 text-gray-700">
-        <li>Instant matching when both sides align</li>
-        <li>In-app messaging to agree and complete swaps</li>
-        <li>Mobile-friendly and fast</li>
-      </ul>
-    </div>
+  <div class="bg-white p-0 rounded border overflow-hidden">
+    <img src="https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1200&auto=format&fit=crop" alt="Students studying" class="w-full h-full object-cover">
   </div>
 </section>
 

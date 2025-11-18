@@ -10,8 +10,17 @@ swaps_bp = Blueprint("swaps", __name__, template_folder="templates")
 @swaps_bp.get("/")
 @login_required
 def browse():
-    q = db.session.execute(db.select(SwapRequest).order_by(SwapRequest.created_at.desc())).scalars().all()
-    return render_template("swaps/browse.html", swaps=q)
+    swaps = db.session.execute(db.select(SwapRequest).order_by(SwapRequest.created_at.desc())).scalars().all()
+    query = request.args.get("q", "").strip().lower()
+    if query:
+        def match_swap(s):
+            items = list(s.giving) + list(s.wanting)
+            for m in items:
+                if query in (m.code or "").lower() or query in (m.name or "").lower() or query in (m.department or "").lower():
+                    return True
+            return False
+        swaps = [s for s in swaps if match_swap(s)]
+    return render_template("swaps/browse.html", swaps=swaps, q=request.args.get("q", ""))
 
 
 @swaps_bp.get("/create")
