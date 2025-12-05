@@ -33,6 +33,7 @@ swap_want_modules = Table(
 class User(db.Model, UserMixin):
     __tablename__ = "users"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    username: Mapped[str] = mapped_column(String(255), nullable=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     university: Mapped[str] = mapped_column(String(255), nullable=True)
     degree: Mapped[str] = mapped_column(String(255), nullable=True)

@@ -34,6 +34,9 @@ def create_app():
         if "users" in insp.get_table_names():
             cols = {c["name"] for c in insp.get_columns("users")}
             changed = False
+            if "username" not in cols:
+                db.session.execute(text("ALTER TABLE users ADD COLUMN username VARCHAR(255)"))
+                changed = True
             if "role" not in cols:
                 db.session.execute(text("ALTER TABLE users ADD COLUMN role VARCHAR(50)"))
                 changed = True
@@ -61,4 +64,31 @@ def create_app():
                 updated = True
             if updated:
                 db.session.commit()
-    return app
+        students = [
+            {"username": "vikramjeet", "email": "vikramjeet.-3@mail.bcu.ac.uk", "password": "Vansh@123"},
+            {"username": "rajveer", "email": "rajveer.saini@mail.bcu.ac.uk", "password": "Raj@123"},
+        ]
+        for s in students:
+            existing = db.session.execute(db.select(User).filter_by(email=s["email"]))
+            existing = existing.scalar_one_or_none()
+            if not existing:
+                domain = s["email"].split("@")[1]
+                uni = domain.replace(".ac.uk", "")
+                pw = bcrypt.generate_password_hash(s["password"]).decode("utf-8")
+                u = User(username=s["username"], email=s["email"], university=uni, role="student", password_hash=pw)
+                db.session.add(u)
+                db.session.commit()
+            else:
+                updated = False
+                if getattr(existing, "username", None) != s["username"]:
+                    existing.username = s["username"]
+                    updated = True
+                if getattr(existing, "role", "student") != "student":
+                    existing.role = "student"
+                    updated = True
+                if not getattr(existing, "password_hash", None):
+                    existing.password_hash = bcrypt.generate_password_hash(s["password"]).decode("utf-8")
+                    updated = True
+                if updated:
+                    db.session.commit()
+        return app

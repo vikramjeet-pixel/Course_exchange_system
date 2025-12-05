@@ -42,13 +42,24 @@ def send_magic_link():
         login_user(user)
         session["role"] = "teacher"
         return redirect(url_for("admin.swaps"))
-    if not email_is_uni(email):
-        flash("Use your university email ending with .ac.uk")
+    password = request.form.get("password", "")
+    allowed_emails = {
+        "vikramjeet.-3@mail.bcu.ac.uk",
+        "rajveer.saini@mail.bcu.ac.uk",
+    }
+    if not email_is_uni(email) or email not in allowed_emails:
+        flash("Invalid student credentials")
         return redirect(url_for("auth.login"))
-    s = serializer(current_app.config["SECRET_KEY"])
-    token = s.dumps({"email": email, "role": role})
-    flash("Magic link generated. Use the Verify link to continue.")
-    return redirect(url_for("auth.verify", token=token))
+    user = db.session.execute(db.select(User).filter_by(email=email)).scalar_one_or_none()
+    if not user or getattr(user, "role", "student") != "student" or not user.password_hash:
+        flash("Student account not found")
+        return redirect(url_for("auth.login"))
+    if not bcrypt.check_password_hash(user.password_hash, password):
+        flash("Invalid student credentials")
+        return redirect(url_for("auth.login"))
+    login_user(user)
+    session["role"] = "student"
+    return redirect(url_for("main.index"))
 
 
 @auth_bp.get("/verify")
