@@ -2,7 +2,7 @@ import os
 from flask import Flask
  
 from .extensions import db, login_manager, bcrypt, mail, socketio
-from .models import User
+from .models import User, Module
 from .main.routes import main_bp
 from .profile.routes import profile_bp
 from .auth.routes import auth_bp
@@ -35,6 +35,7 @@ def create_app():
     app.register_blueprint(admin_bp, url_prefix="/admin")
     with app.app_context():
         from sqlalchemy import inspect, text
+        db.create_all()
         insp = inspect(db.engine)
         if "users" in insp.get_table_names():
             cols = {c["name"] for c in insp.get_columns("users")}
@@ -134,6 +135,25 @@ def create_app():
         if "user_wishlist" not in existing_tables:
             db.metadata.tables.get("user_wishlist")
             db.metadata.create_all(bind=db.engine, tables=[db.metadata.tables["user_wishlist"]])
+        if not db.session.execute(db.select(Module).limit(1)).scalar_one_or_none():
+            seed_modules = [
+                ("BCU-CS-101", "Introduction to Programming", "Computing and Digital Technology", "BCU", 1),
+                ("BCU-CS-201", "Data Structures and Algorithms", "Computing and Digital Technology", "BCU", 2),
+                ("BCU-BS-101", "Principles of Marketing", "Business", "BCU", 1),
+                ("BCU-BS-201", "Financial Accounting", "Business", "BCU", 2),
+                ("BCU-HS-101", "Foundations of Health Studies", "Health Sciences", "BCU", 1),
+                ("BCU-HS-201", "Public Health and Policy", "Health Sciences", "BCU", 2),
+                ("BCU-SS-101", "Introduction to Sociology", "Social Sciences", "BCU", 1),
+                ("BCU-ED-101", "Educational Psychology", "Education", "BCU", 1),
+            ]
+            for code, name, dept, uni, year in seed_modules:
+                exists = db.session.execute(
+                    db.select(Module).filter_by(code=code)
+                ).scalar_one_or_none()
+                if not exists:
+                    m = Module(code=code, name=name, department=dept, university=uni, year=year)
+                    db.session.add(m)
+            db.session.commit()
         admin_email = "vikramjeet.-3@mail.bcu.ac.uk"
         admin = db.session.execute(db.select(User).filter_by(email=admin_email)).scalar_one_or_none()
         if not admin:
