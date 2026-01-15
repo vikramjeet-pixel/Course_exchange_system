@@ -77,14 +77,14 @@ def create_post():
             return redirect(url_for("swaps.create"))
 
     swap = SwapRequest(user_id=current_user.id,
-                       notes=notes,
-                       priority=priority,
-                       timeslots=timeslots,
-                       campus=campus,
-                       module_group_pref=module_group_pref,
-                       visibility=visibility,
-                       alerts_email=alerts_email,
-                       auto_create_chat=auto_create_chat)
+                    notes=notes,
+                    priority=priority,
+                    timeslots=timeslots,
+                    campus=campus,
+                    module_group_pref=module_group_pref,
+                    visibility=visibility,
+                    alerts_email=alerts_email,
+                    auto_create_chat=auto_create_chat)
     if expires_on:
         try:
             from datetime import datetime
